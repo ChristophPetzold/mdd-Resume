@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE paradigm SYSTEM "edf.dtd">
 
-<paradigm name="Resume" guid="{D8AF5D76-7812-4404-82F2-C573633CD966}" cdate="Sat Jul 13 20:50:10 2013" mdate="Sat Jul 13 20:50:10 2013" >
+<paradigm name="Resume" guid="{D45CF03D-923B-4EF3-914C-3D9A2616B901}" cdate="Sat Jul 13 20:50:10 2013" mdate="Sat Jul 13 20:50:10 2013" >
 
 	<comment>Build a persons Resmue</comment>
 
@@ -76,6 +76,8 @@
 			<enumitem dispname = "Highschool" value = "Highschool"></enumitem>
 			<enumitem dispname = "University" value = "University"></enumitem>
 			<enumitem dispname = "Traning Course" value = "Traning Course"></enumitem>
+		</attrdef>
+		<attrdef name="TypeOfProject" metaref = "1100" valuetype = "string" defvalue = "">
 		</attrdef>
 		<attrdef name="Year" metaref = "1011" valuetype = "integer" defvalue = "1900">
 		</attrdef>
@@ -166,7 +168,7 @@
 				<part metaref = "1089" role = "Birthday" primary = "yes" linked = "yes"></part>
 			</aspect>
 		</model>
-		<model name = "Project" metaref = "1030" attributes = "Description Customer" >
+		<model name = "Project" metaref = "1030" attributes = "Description Customer TypeOfProject" >
 				<regnode name = "namePosition" value ="4"></regnode>
 				<regnode name = "icon" value ="project.png"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
@@ -189,7 +191,7 @@
 			</constraint>
 			<role name = "End" metaref = "1077" kind = "Date"></role>
 			<role name = "Start" metaref = "1078" kind = "Date"></role>
-			<aspect name = "Dated" metaref = "1090" attributes = "Description Customer" >
+			<aspect name = "Dated" metaref = "1090" attributes = "Description Customer TypeOfProject" >
 				<dispname>DatedAspect</dispname>
 				<part metaref = "1091" role = "End" primary = "yes" linked = "yes"></part>
 				<part metaref = "1092" role = "Start" primary = "yes" linked = "yes"></part>

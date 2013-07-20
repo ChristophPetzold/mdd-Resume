@@ -1,4 +1,5 @@
 package model.elements;
+import java.util.HashMap;
 import java.util.Vector;
 
 import model.interpreter.IResumeVisitor;
@@ -22,6 +23,12 @@ public abstract class FetchVisitor implements IResumeVisitor {
 	protected Vector<Project>		projects;
 	protected Vector<ProjectHost>	projectConnections;
 
+	
+	/**
+	 * Map: "Institution.Project" -> ProjectHost
+	 */
+	protected HashMap<String, ProjectHost> connections;
+	
 	public FetchVisitor() {
 		init();
 	}
@@ -43,7 +50,7 @@ public abstract class FetchVisitor implements IResumeVisitor {
 	}
 
 	public void visit(ProjectHost connection) {
-		projectConnections.add(connection);
+		connections.put(connection.getInstitution()+"."+connection.getProject(), connection);		
 	}
 
 	public void visit(ResumeElement element) {
@@ -56,6 +63,7 @@ public abstract class FetchVisitor implements IResumeVisitor {
 		projects = new Vector<Project>();
 		projectConnections = new Vector<ProjectHost>();
 
+		connections = new HashMap<String, ProjectHost>();
 	}
 
 }

@@ -37,7 +37,6 @@ public class ResumeInterpreter implements BONComponent {
 	public void invokeEx(JBuilder builder, JBuilderObject focus, @SuppressWarnings("rawtypes") Collection selected,
 			int param) {
 
-		// TODO reactivate path selection
 		setDestinationPath();
 
 		// TODO choose interpretation
@@ -47,9 +46,7 @@ public class ResumeInterpreter implements BONComponent {
 		transformModel(builder);
 	}
 
-	/**
-	 *
-	 */
+	
 	@Override
 	public void registerCustomClasses() {
 		// TODO Auto-generated method stub
@@ -66,6 +63,8 @@ public class ResumeInterpreter implements BONComponent {
 
 		// for each Root Model - a Resume - we will create a separate output
 		for (JBuilderModel model : roots) {
+			
+			visitor.init();
 			fetchElements(model);
 
 		}

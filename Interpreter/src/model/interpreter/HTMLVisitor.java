@@ -68,6 +68,9 @@ public class HTMLVisitor extends FetchVisitor {
 		//
 		// Employments
 		Div employmentDiv = new Div().setCSSClass("employments");
+		Div employmentHead = new Div().setCSSClass("employment_head");
+		employmentHead.appendText("Employments");
+		employmentDiv.appendChild(employmentHead);
 
 		for (Employment emp : this.employmentInstitutions) {
 			employmentDiv.appendChild(emploayment2HTML(emp));
@@ -77,7 +80,11 @@ public class HTMLVisitor extends FetchVisitor {
 		//
 		// Education
 		Div educationDiv = new Div().setCSSClass("education");
-		// Content: Body - Institutions
+		Div educationHead = new Div().setCSSClass("education_head");
+		educationHead.appendText("Education");
+		educationDiv.appendChild(educationHead);
+		
+		
 		for (Education edu : this.educationInstitutions) {
 			educationDiv.appendChild(education2HTML(edu));
 		}
@@ -110,7 +117,7 @@ public class HTMLVisitor extends FetchVisitor {
 	private Node institution2HTML(Institution inst, String title) {
 		Div institutionDiv = new Div().setCSSClass("institution");
 
-		Div date = getDurationDiv(inst.getStartDate(), inst.getEndDate(), " - ", " now");
+		Div date = getDurationDiv(inst.getStartDate(), inst.getEndDate(), " now");
 		institutionDiv.appendChild(date);
 
 		Div institutionText = new Div().setCSSClass("institution_text");
@@ -124,31 +131,26 @@ public class HTMLVisitor extends FetchVisitor {
 		institutionText.appendChild(description);
 
 		Div projectsDiv = new Div().setCSSClass("institution_project");
+		Div projectHead = new Div().setCSSClass("project_head");
+		projectHead.appendText("Projects");
+		projectsDiv.appendChild(projectHead);
+		
+		
 		// Projects ...
-		for (ProjectHost connection : projectConnections) {
-
-			if (connection.getInstitution().compareTo(inst.getModelId()) == 0) {
-				projectsDiv.appendChild(project2HTML(connection.getProject()));
-			}
-
-		}
+//		for (ProjectHost connection : projectConnections) {
+//
+//			if (connection.getInstitution().compareTo(inst.getModelId()) == 0) {
+				projectsDiv.appendChild(project2HTML(inst.getModelId()));
+//			}
+//
+//		}
 
 		institutionText.appendChild(projectsDiv);
 		institutionDiv.appendChild(institutionText);
 		return institutionDiv;
 	}
 
-	private Div getDurationDiv(Date start, Date end, String sep, String alt) {
-		String dateString = start.getDateString(DATE_PATTERN);
-		dateString += sep;
-		if ((end == null) || (end.getDate() == null)) {
-			dateString += alt;
-		} else {
-			dateString += end.getDateString(DATE_PATTERN);
-		}
-
-		return new Div().setCSSClass("date").appendText(dateString);
-	}
+	
 
 	/**
 	 * @return DIV element containing person information
@@ -162,7 +164,7 @@ public class HTMLVisitor extends FetchVisitor {
 		Div name = new Div().appendText(person.getFirstName() + " " + person.getName()).setCSSClass("person_name");
 		text.appendChild(name);
 
-		Div birthday = getDurationDiv(person.getBirthday(), null, "", "");
+		Div birthday = getDurationDiv("Birthday: ", person.getBirthday(), null, "", "").setCSSClass("birthday");
 
 		text.appendChild(birthday);
 		personDiv.appendChild(text);
@@ -180,47 +182,70 @@ public class HTMLVisitor extends FetchVisitor {
 	 * 
 	 * @return DIV element containing projects information
 	 * */
-	private Node project2HTML(String projectModelId) {
+	private Node project2HTML(String institutelId) {
 
-		Div projectDiv = new Div().setCSSClass("project");
+		Div projectsDiv = new Div().setCSSClass("projects");
+				
+		for (Project project : this.projects) {
+			
+			if(connections.containsKey(institutelId+"."+project.getModelId())){
+			
+			//if (project.getModelId().compareTo(projectModelId) == 0) {
 
-		for (Project project : projects) {
-			if (project.getModelId().compareTo(projectModelId) == 0) {
-
-				Div date = getDurationDiv(project.getStartDate(), project.getEndDate(), " - ", " now");
-
+				Div projectDiv = new Div().setCSSClass("project");
+				
+				Div date = getDurationDiv(project.getStartDate(), project.getEndDate(), " now");
+				
+				Div type = new Div().setCSSClass("project_type").appendText(project.getType());
+				Div title = new Div().setCSSClass("project_title").appendText("\""+project.getName()+"\"");
+				
 				Div customer = new Div().setCSSClass("project_customer").appendText(
 						"Customer: " + project.getCustomer());
-
-				Div title = new Div().setCSSClass("project_title").appendText(project.getName());
 
 				Div description = new Div().setCSSClass("project_description").appendText(project.getDescription());
 
 				projectDiv.appendChild(date);
 
 				Div projectText = new Div().setCSSClass("project_text");
+				projectText.appendChild(type);
 				projectText.appendChild(title);
 				projectText.appendChild(customer);
 				projectText.appendChild(description);
 
 				projectDiv.appendChild(projectText);
 
-				return projectDiv;
+				projectsDiv.appendChild(projectDiv);
 			}
 		}
 
-		ResumeModelHelper.err(projectModelId, "Could not find Project");
-
-		return null;
+		
+		return projectsDiv;
 	}
 
 	private void sortData() {
 
 		Collections.sort(this.employmentInstitutions, Collections.reverseOrder());
 		Collections.sort(this.educationInstitutions, Collections.reverseOrder());
-		Collections.sort(this.employmentInstitutions, Collections.reverseOrder());
+		Collections.sort(this.projects, Collections.reverseOrder());
+		
 	}
 
+	private Div getDurationDiv(String title, Date start, Date end, String sep, String alt) {
+		String dateString = title + start.getDateString(DATE_PATTERN);
+		dateString += sep;
+		if ((end == null) || (end.getDate() == null)) {
+			dateString += alt;
+		} else {
+			dateString += end.getDateString(DATE_PATTERN);
+		}
+
+		return new Div().setCSSClass("date").appendText(dateString);
+	}
+	
+	private Div getDurationDiv(Date start, Date end, String alt){		
+		return getDurationDiv("",  start,  end,  " - ",  alt);
+	}
+	
 	/**
 	 * @param destination
 	 *            file path
@@ -230,18 +255,16 @@ public class HTMLVisitor extends FetchVisitor {
 	private void save(String destination, String content) throws URISyntaxException {
 		try {
 
-			ResumeModelHelper.popup(destination, "Output Folder");
-
 			// Copy CSS file to output folder
 			URL source = this.getClass().getClassLoader().getResource(CSS_FILE);
 
-			String srcString = source.getFile().replace("/", File.separator).substring(1);
-			ResumeModelHelper.popup("srcString = " + srcString, "DEBUG");
-
+			String srcString = source.getFile().replace("/", File.separator).replace("%20", " ").substring(1);
 			String destCSS = destination + File.separator + CSS_FILE;
 
 			Files.copy(Paths.get(srcString), Paths.get(destCSS), StandardCopyOption.REPLACE_EXISTING);
 
+			
+			// Create result file
 			File file = new File(destination + File.separator + person.getName() + ".html");
 			file.createNewFile();
 			FileWriter fw = new FileWriter(file);

@@ -22,11 +22,13 @@ public class Project extends ResumeElement implements Comparable<Project> {
 
 	private final String	ATTRIBUTE_DESCRIPTION	= "Description";
 	private final String	ATTRIBUTE_CUSTOMER		= "Customer";
+	private final String	ATTRIBUTE_TYPE			= "TypeOfProject";
 	private final String	ATOM_START_DATE			= "Start";
 	private final String	ATOM_END_DATE			= "End";
 
 	protected String		description				= "";
 	protected String		customer				= "";
+	protected String		type					= "";
 	protected Date			startDate				= new Date();
 	protected Date			endDate					= new Date();
 
@@ -36,6 +38,7 @@ public class Project extends ResumeElement implements Comparable<Project> {
 
 		description = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_DESCRIPTION);
 		customer = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_CUSTOMER);
+		type = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_TYPE);
 
 		startDate.build(ResumeModelHelper.getSingleAtom((JBuilderModel) modelObject, ATOM_START_DATE));
 		endDate.build(ResumeModelHelper.getSingleAtom((JBuilderModel) modelObject, ATOM_END_DATE));
@@ -54,6 +57,13 @@ public class Project extends ResumeElement implements Comparable<Project> {
 	 */
 	public String getCustomer() {
 		return customer;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType() {
+		return type;
 	}
 
 	/**
@@ -80,7 +90,14 @@ public class Project extends ResumeElement implements Comparable<Project> {
 	 * */
 	@Override
 	public int compareTo(Project otherProject) {
-		return startDate.getDate().compareTo(otherProject.startDate.getDate());
+		java.util.Date self = startDate.getDate();
+		java.util.Date other = otherProject.startDate.getDate();
+		int result = self.compareTo(other);
+
+		// ResumeModelHelper.popup(startDate.getDateString("dd.MM.yy") +(result>0?" > ":(result==0?" = ": " < "))+
+		// otherProject.startDate.getDateString("dd.MM.yy"), "Project compare");
+
+		return result;
 	}
 
 	@Override

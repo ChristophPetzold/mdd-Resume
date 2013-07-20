@@ -1,0 +1,77 @@
+.main{
+	width: 600px;
+	margin-right: auto;
+	margin-left: auto;
+	background-color: #222222;
+	color: #aaaaaa;
+}
+
+img{
+	max-width: 200px;
+	max-height: 200px;
+}
+
+/* Person elements*/
+.person{
+	clear: both;
+	color: #ddddff;
+}
+.person_text{
+	width: 400px;
+	float: left;
+}
+.person_name{
+	font-weight: bold;
+	font-size: 30pt;
+}
+.person_picture{
+	width: 200px;
+	float: right;	
+}
+
+
+/* Institution elements */
+.institution{
+	clear: both;
+}
+
+.institution_text{
+	clear: both;
+	width: 400px;
+	margin-left: 200px;
+}
+
+.institution_title{
+	font-weight: bold;
+	font-size: 14pt;
+}
+
+
+/* Project Elements*/
+.institution_project{
+	margin-left: 10px;
+	margin-top: 10px;
+}
+
+.project{
+	margin-top: 5px;
+}
+.project_customer{
+	font-style: italic;
+}
+
+.project_title{
+	font-weight: bold;
+	
+}
+.project_description{
+}
+
+
+/* common */
+.date{
+	font-weight: bold;
+	font-size: 12pt;
+	float: left;
+	width: 100px;
+}

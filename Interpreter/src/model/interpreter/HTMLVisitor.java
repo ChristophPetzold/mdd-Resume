@@ -13,7 +13,6 @@ import java.util.Collections;
 import model.elements.Date;
 import model.elements.Education;
 import model.elements.Employment;
-import model.elements.FetchVisitor;
 import model.elements.Institution;
 import model.elements.Project;
 import model.elements.ProjectHost;
@@ -55,7 +54,7 @@ public class HTMLVisitor extends FetchVisitor {
 
 		// Content: Head
 		Title title = new Title();
-		title.appendText("Resume of " + person.getFirstName() + " " + person.getName());
+		title.appendText("Resume of " + person.getFullName());
 		html.head.appendChild(title);
 
 		// Content: Body
@@ -95,8 +94,7 @@ public class HTMLVisitor extends FetchVisitor {
 		try {
 			save(destination, html.write());
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ResumeModelHelper.err(e.getStackTrace().toString(), "Exception at saving the HTML-Page");
 		}
 	}
 
@@ -161,7 +159,7 @@ public class HTMLVisitor extends FetchVisitor {
 
 		Div text = new Div().setCSSClass("person_text");
 
-		Div name = new Div().appendText(person.getFirstName() + " " + person.getName()).setCSSClass("person_name");
+		Div name = new Div().appendText(person.getFullName()).setCSSClass("person_name");
 		text.appendChild(name);
 
 		Div birthday = getDurationDiv("Birthday: ", person.getBirthday(), null, "", "").setCSSClass("birthday");

@@ -1,8 +1,13 @@
-package model.elements;
+package model.interpreter;
 import java.util.HashMap;
 import java.util.Vector;
 
-import model.interpreter.IResumeVisitor;
+import model.elements.Education;
+import model.elements.Employment;
+import model.elements.Person;
+import model.elements.Project;
+import model.elements.ProjectHost;
+import model.elements.ResumeElement;
 
 /**
  * ResumeInterpreter

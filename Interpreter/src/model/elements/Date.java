@@ -46,7 +46,7 @@ public class Date extends ResumeElement {
 		cal.set(Calendar.MONTH, ResumeModelHelper.assignIntAttribute(modelObject, ATTRIBUTE_MONTH));
 
 		/**
-		 * FIXME: Getting wrong day values from the model (day-1)
+		 * Getting wrong day values from the model (day-1), so have to add 1 
 		 * */
 		int day = ResumeModelHelper.assignIntAttribute(modelObject, ATTRIBUTE_DAY) + 1;
 		cal.set(Calendar.DAY_OF_MONTH, day);

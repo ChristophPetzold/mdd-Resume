@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import model.elements.ResumeElement;
 import model.help.AttributeNotFoundException;
@@ -23,7 +24,6 @@ import org.isis.gme.bon.JBuilderObject;
 public class ResumeInterpreter implements BONComponent {
 
 	private String			inputPath;
-
 	private IResumeVisitor	visitor;
 
 	/**
@@ -40,17 +40,40 @@ public class ResumeInterpreter implements BONComponent {
 		setDestinationPath();
 
 		// TODO choose interpretation
-
-		visitor = new HTMLVisitor();
+		interpeterChoice();
 
 		transformModel(builder);
 	}
 
-	
+	/**
+	 * 
+	 */
+	protected void interpeterChoice() {
+		String[] possibilities = { "HTML Résumé", "JSON for Timeline" };
+		String s = (String) JOptionPane.showInputDialog(null, "Choose Interpreter:\n", "Interpreter Choice",
+				JOptionPane.PLAIN_MESSAGE, null, possibilities, possibilities[0]);
+
+		// If a string was returned, say so.
+		if ((s != null) && (s.length() > 0)) {
+
+			if (s.compareTo(possibilities[0]) == 0) {
+				visitor = new HTMLVisitor();
+			}
+
+			if (s.compareTo(possibilities[1]) == 0) {
+				visitor = new TimelineVisitor();
+			}
+
+			return;
+		}
+
+		ResumeModelHelper.err("Could not choose interpreter", "Choice Failure");
+		System.exit(0);
+	}
+
 	@Override
 	public void registerCustomClasses() {
-		// TODO Auto-generated method stub
-
+		// Hence we are not introducing new Model-Entities we don not need to register custom Classes.
 	}
 
 	/**
@@ -63,7 +86,7 @@ public class ResumeInterpreter implements BONComponent {
 
 		// for each Root Model - a Resume - we will create a separate output
 		for (JBuilderModel model : roots) {
-			
+
 			visitor.init();
 			fetchElements(model);
 

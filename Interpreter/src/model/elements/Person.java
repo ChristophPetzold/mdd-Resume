@@ -73,10 +73,8 @@ public class Person extends ResumeElement {
 		return birthday;
 	}
 
-	@Override
-	public String toString() {
-
-		String txt = "Person: ";
+	public String getFullName(){
+		String txt = "";
 
 		if (!firstName.isEmpty()) {
 			txt += firstName + " ";
@@ -89,6 +87,11 @@ public class Person extends ResumeElement {
 		}
 
 		return txt;
+	}
+	
+	@Override
+	public String toString() {
+		return "Person: " + getFullName();
 	}
 
 }

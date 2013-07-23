@@ -24,25 +24,25 @@ import model.interpreter.core.FetchVisitor;
  */
 public class TimelineVisitor extends FetchVisitor {
 
-	private final String	JSON_FIELD_HEADLINE		= "headline";
-	private final String	JSON_FIELD_TYPE			= "type";
-	private final String	JSON_FIELD_TEXT			= "text";
-	private final String	JSON_FIELD_ASSET		= "asset";
-	private final String	JSON_FIELD_MEDIA		= "media";
-	private final String	JSON_FIELD_CREDIT		= "credit";
-	private final String	JSON_FIELD_CAPTION		= "caption";
-	private final String	JSON_FIELD_START		= "startDate";
-	private final String	JSON_FIELD_END			= "endDate";
-	private final String	JSON_FIELD_TAG			= "tag";
-	private final String	JSON_FIELD_THUMBNAIL	= "thumbnail";
+	private final String	JSON_FIELD_HEADLINE		= Messages.getString("TimelineVisitor.json.headline");				//$NON-NLS-1$
+	private final String	JSON_FIELD_TYPE			= Messages.getString("TimelineVisitor.json.type");					//$NON-NLS-1$
+	private final String	JSON_FIELD_TEXT			= Messages.getString("TimelineVisitor.json.text");					//$NON-NLS-1$
+	private final String	JSON_FIELD_ASSET		= Messages.getString("TimelineVisitor.json.asset");				//$NON-NLS-1$
+	private final String	JSON_FIELD_MEDIA		= Messages.getString("TimelineVisitor.json.media");				//$NON-NLS-1$
+	private final String	JSON_FIELD_CREDIT		= Messages.getString("TimelineVisitor.json.credit");				//$NON-NLS-1$
+	private final String	JSON_FIELD_CAPTION		= Messages.getString("TimelineVisitor.json.caption");				//$NON-NLS-1$
+	private final String	JSON_FIELD_START		= Messages.getString("TimelineVisitor.json.startDate");			//$NON-NLS-1$
+	private final String	JSON_FIELD_END			= Messages.getString("TimelineVisitor.json.endDate");				//$NON-NLS-1$
+	private final String	JSON_FIELD_TAG			= Messages.getString("TimelineVisitor.json.tag");					//$NON-NLS-1$
+	private final String	JSON_FIELD_THUMBNAIL	= Messages.getString("TimelineVisitor.json.thumbnail");			//$NON-NLS-1$
 
-	private final String	TAG_EMPLOYMENT			= "Employments";
-	private final String	TAG_EDUCATION			= "Education";
-	private final String	TAG_EMPLOYMENT_PROJECT	= "Employments projects";
-	private final String	TAG_EDUCATION_PROJECT	= "Education projects";
+	private final String	TAG_EMPLOYMENT			= Messages.getString("TimelineVisitor.tag.employment");			//$NON-NLS-1$
+	private final String	TAG_EDUCATION			= Messages.getString("TimelineVisitor.tag.education");				//$NON-NLS-1$
+	private final String	TAG_EMPLOYMENT_PROJECT	= Messages.getString("TimelineVisitor.tag.project.emplpoyment");	//$NON-NLS-1$
+	private final String	TAG_EDUCATION_PROJECT	= Messages.getString("TimelineVisitor.tag.project.education");		//$NON-NLS-1$
 
-	private final String	JSON_DATE_PATTERN		= "yyyy,MM,dd";
-	private final String	JSON_SEP				= ", ";
+	private final String	JSON_DATE_PATTERN		= Messages.getString("TimelineVisitor.json.datePattern");			//$NON-NLS-1$
+	private final String	JSON_SEP				= Messages.getString("TimelineVisitor.16");						//$NON-NLS-1$
 
 	@Override
 	public void perform(String destination) {
@@ -55,14 +55,14 @@ public class TimelineVisitor extends FetchVisitor {
 	 * @param destination
 	 */
 	private String genreateJsonFile(String destination) {
-		String jsonString = "storyjs_jsonp_data = { \"timeline\" : {";
+		String jsonString = Messages.getString("TimelineVisitor.json.opening"); //$NON-NLS-1$
 
 		jsonString += generateJsonIntro() + JSON_SEP;
 
 		jsonString += generateJsonTimeEvents();
 
 		// closing
-		jsonString += "}}";
+		jsonString += Messages.getString("TimelineVisitor.json.closing"); //$NON-NLS-1$
 
 		return cleanUp(jsonString);
 
@@ -79,8 +79,8 @@ public class TimelineVisitor extends FetchVisitor {
 			jsonString = jsonString.replaceAll(JSON_SEP + JSON_SEP, JSON_SEP);
 		}
 
-		jsonString = jsonString.replaceAll(JSON_SEP + "}", "}");
-		jsonString = jsonString.replaceAll(JSON_SEP + "]", "]");
+		jsonString = jsonString.replaceAll(JSON_SEP + "}", "}"); //$NON-NLS-1$ //$NON-NLS-2$
+		jsonString = jsonString.replaceAll(JSON_SEP + "]", "]"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return jsonString;
 	}
@@ -92,41 +92,56 @@ public class TimelineVisitor extends FetchVisitor {
 
 		String intro = addJsonElement(JSON_FIELD_HEADLINE, this.person.getFullName());
 
-		intro += addJsonElement(JSON_FIELD_TYPE, "default");
-		intro += addJsonElement(JSON_FIELD_TEXT, "This is the timeline of " + person.getFullName() + ". Born on "
-				+ person.getBirthday().getDateString("dd. MMMMMMMMMM yyyy") + ". ");
-		intro += addJsonAsset(person.getPicturePath(), "", person.getFirstName() + " " + person.getName(), null);
+		intro += addJsonElement(JSON_FIELD_TYPE, Messages.getString("TimelineVisitor.timeline.type")); //$NON-NLS-1$
+		intro += addJsonElement(
+				JSON_FIELD_TEXT,
+				String.format(
+						Messages.getString("TimelineVisitor.timeline.introduction.text"), person.getFullName(), person //$NON-NLS-1$
+								.getBirthday().getDateString(
+										Messages.getString("TimelineVisitor.timeline.introduction.birthDatePattern")), person.getBirthplace())); //$NON-NLS-1$
+		intro += addJsonAsset(
+				person.getPicturePath(),
+				Messages.getString("TimelineVisitor.26"), //$NON-NLS-1$
+				String.format(
+						Messages.getString("TimelineVisitor.introduction.imgAlt"), person.getFirstName(), person.getName()), null); //$NON-NLS-1$
 
 		return intro;
 	}
 
 	/**
-	 * @return
+	 * Generate a date block based on employment and education events
+	 * 
+	 * @return JSON-"Date"-block
 	 */
 	private String generateJsonTimeEvents() {
 
-		String dates = "[";
+		String dates = "["; //$NON-NLS-1$
 		dates += addEmploymentDates();
 		dates += addEducationDates();
-		dates += "]";
+		dates += "]"; //$NON-NLS-1$
 
-		return "\"date\":" + dates;
+		return String.format(Messages.getString("TimelineVisitor.timeline.datesArray"), dates); //$NON-NLS-1$
 	}
 
 	/**
-	 * @return
+	 * Generate a list of JSON-dates based on employment events
+	 * 
+	 * @return list of JSON-dates
 	 */
 	private String addEmploymentDates() {
-		String institutionDates = "";
+		String institutionDates = ""; //$NON-NLS-1$
 
 		for (Employment emp : employmentInstitutions) {
-			String text = "";
+			String text = ""; //$NON-NLS-1$
 
-			text += "Location: " + emp.getAddress().toString() + "<br/>";
-			text += "Position: " + emp.getPosition() + "<br/>";
-			text += emp.getDescription() + "<br/>";
+			text += String.format(
+					Messages.getString("TimelineVisitor.employment.loacation"), emp.getAddress().toString()); //$NON-NLS-1$
+			text += String.format(Messages.getString("TimelineVisitor.employment.position"), emp.getPosition()); //$NON-NLS-1$
+			text += String.format(Messages.getString("TimelineVisitor.employment.description"), emp.getDescription()); //$NON-NLS-1$
 
-			String asset = addJsonAsset(emp.getMediaUrl(), "", "(" + emp.getMediaUrl() + ")", "");
+			String asset = addJsonAsset(
+					emp.getMediaUrl(),
+					Messages.getString("TimelineVisitor.employment.asset.credit"), String.format(Messages.getString("TimelineVisitor.employment.asset.caption"), emp.getMediaUrl()), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			institutionDates += addJSONDate(emp.getStartDate(), emp.getEndDate(), emp.getName(), text, TAG_EMPLOYMENT,
 					asset);
@@ -140,19 +155,24 @@ public class TimelineVisitor extends FetchVisitor {
 	}
 
 	/**
-	 * @return
+	 * Generate a list of JSON-dates based on education events
+	 * 
+	 * @return list of JSON-dates
 	 */
 	private String addEducationDates() {
-		String educationDates = "";
+		String educationDates = ""; //$NON-NLS-1$
 
 		for (Education edu : educationInstitutions) {
-			String text = "";
+			String text = ""; //$NON-NLS-1$
 
-			text += "Location: " + edu.getAddress().toString() + "<br/>";
-			text += "Type: " + edu.getType() + "<br/>";
-			text += edu.getDescription() + "<br/>";
+			text += String
+					.format(Messages.getString("TimelineVisitor.education.location"), edu.getAddress().toString()); //$NON-NLS-1$
+			text += String.format(Messages.getString("TimelineVisitor.education.type"), edu.getType()); //$NON-NLS-1$
+			text += String.format(Messages.getString("TimelineVisitor.education.description"), edu.getDescription()); //$NON-NLS-1$
 
-			String asset = addJsonAsset(edu.getMediaUrl(), "", "(" + edu.getMediaUrl() + ")", "");
+			String asset = addJsonAsset(
+					edu.getMediaUrl(),
+					"", String.format(Messages.getString("TimelineVisitor.education.asset.caption"), edu.getMediaUrl()), ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			educationDates += addJSONDate(edu.getStartDate(), edu.getEndDate(), edu.getName(), text, TAG_EDUCATION,
 					asset);
@@ -171,25 +191,32 @@ public class TimelineVisitor extends FetchVisitor {
 	 */
 	private String addInstitutionProjects(String instituteId, String instituteName, String tag) {
 
-		String projectsJSON = "";
+		String projectsJSON = ""; //$NON-NLS-1$
 
 		// now we are looking for the projects which are done at the current institution (modelId)
 		for (Project project : this.projects) {
 
-			if (this.connections.containsKey(instituteId + "." + project.getModelId())) {
+			if (this.connections.containsKey(instituteId + "." + project.getModelId())) { //$NON-NLS-1$
 
-				String projectJSON = "";
+				String projectJSON = ""; //$NON-NLS-1$
 
-				String text = "";
+				String text = ""; //$NON-NLS-1$
 
-				text += "Title: <i>" + project.getName() + "</i><br/>";
-				text += "Customer: " + project.getCustomer() + "<br/>";
-				text += project.getDescription() + "<br/>";
+				text += String.format(Messages.getString("TimelineVisitor.project.title"), project.getName()); //$NON-NLS-1$
+				text += String.format(Messages.getString("TimelineVisitor.project.customer"), project.getCustomer()); //$NON-NLS-1$
+				text += String.format(
+						Messages.getString("TimelineVisitor.project.description"), project.getDescription()); //$NON-NLS-1$
 
-				String asset = addJsonAsset(project.getMediaUrl(), "", "(" + project.getMediaUrl() + ")", "");
+				String asset = addJsonAsset(
+						project.getMediaUrl(),
+						"", String.format(Messages.getString("TimelineVisitor.project.asset.caption"), project.getMediaUrl()), //$NON-NLS-1$ //$NON-NLS-2$
+						""); //$NON-NLS-1$
 
-				projectJSON += addJSONDate(project.getStartDate(), project.getEndDate(), project.getType() + " at "
-						+ instituteName, text, tag, asset);
+				projectJSON += addJSONDate(
+						project.getStartDate(),
+						project.getEndDate(),
+						String.format(
+								Messages.getString("TimelineVisitor.project.head"), project.getType(), instituteName), text, tag, asset); //$NON-NLS-1$
 
 				projectsJSON += projectJSON + JSON_SEP;
 			}
@@ -216,7 +243,7 @@ public class TimelineVisitor extends FetchVisitor {
 	 *         }
 	 */
 	private String addJSONDate(Date start, Date end, String headline, String text, String tag, String asset) {
-		String date = "{";
+		String date = "{"; //$NON-NLS-1$
 
 		date += addJsonElement(JSON_FIELD_START, start.getDateString(JSON_DATE_PATTERN));
 
@@ -232,7 +259,7 @@ public class TimelineVisitor extends FetchVisitor {
 			date += JSON_SEP + asset;
 		}
 
-		return date + "}";
+		return date + "}"; //$NON-NLS-1$
 	}
 
 	/**
@@ -250,7 +277,7 @@ public class TimelineVisitor extends FetchVisitor {
 	 * @return "elementName": "value"
 	 */
 	private String addLastJsonElement(String elementName, String value) {
-		return "\"" + elementName + "\": \"" + value + "\"";
+		return String.format(Messages.getString("TimelineVisitor.json.elementBlock"), elementName, value); //$NON-NLS-1$
 	}
 
 	/**
@@ -267,7 +294,7 @@ public class TimelineVisitor extends FetchVisitor {
 	 */
 	private String addJsonAsset(String media, String credit, String caption, String thumbnail) {
 
-		String asset = "\"" + JSON_FIELD_ASSET + "\": {";
+		String asset = ""; //$NON-NLS-1$
 
 		asset += addJsonElement(JSON_FIELD_MEDIA, media);
 		asset += addJsonElement(JSON_FIELD_CREDIT, credit);
@@ -279,9 +306,7 @@ public class TimelineVisitor extends FetchVisitor {
 			asset += addLastJsonElement(JSON_FIELD_CAPTION, caption);
 		}
 
-		asset += "}";
-
-		return asset;
+		return String.format(Messages.getString("TimelineVisitor.json.assetBlock"), asset); //$NON-NLS-1$
 	}
 
 	/**
@@ -296,19 +321,23 @@ public class TimelineVisitor extends FetchVisitor {
 		try {
 
 			// Create result file
-			String personsFolder = destination + File.separator + person.getName();
+			String personsFolder = String.format(
+					Messages.getString("TimelineVisitor.output.folder"), destination, File.separator, person.getName()); //$NON-NLS-1$
 			File folder = new File(personsFolder);
 			folder.mkdir();
 
-			File file = new File(personsFolder + File.separator + "resume.jsonp");
+			String fileName = String.format(Messages.getString("TimelineVisitor.output.filePath"), personsFolder,
+					File.separator, Messages.getString("TimelineVisitor.outout.filename"),
+					Messages.getString("TimelineVisitor.output.fileExtension")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			File file = new File(fileName);
 			file.createNewFile();
 			FileWriter fw = new FileWriter(file);
 
 			fw.write(content);
 			fw.close();
 
-		} catch (IOException e1) {
-			ResumeModelHelper.err(e1.getMessage(), "IO Exception");
+		} catch (IOException e) {
+			ResumeModelHelper.err(e, "IO Exception - save"); //$NON-NLS-1$
 		}
 	}
 

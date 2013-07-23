@@ -14,6 +14,7 @@ import model.help.AttributeNotFoundException;
 import model.help.NoChoiceException;
 import model.help.ResumeModelHelper;
 import model.interpreter.custom.HTMLVisitor;
+import model.interpreter.custom.Messages;
 import model.interpreter.custom.TimelineVisitor;
 
 import org.isis.gme.bon.BONComponent;
@@ -22,7 +23,7 @@ import org.isis.gme.bon.JBuilderModel;
 import org.isis.gme.bon.JBuilderObject;
 
 /**
- * Interpreter for Resumé-Models. TODO: refine description ... features
+ * Interpreter for Résumé-Models. TODO: refine description ... features
  * 
  * @author Christoph Petzold
  */
@@ -43,18 +44,9 @@ public class ResumeInterpreter implements BONComponent {
 			interpeterChoice();
 			setDestinationPath();
 		} catch (NoChoiceException e) {
-			ResumeModelHelper.err(e.getMessage(), "Abort");
+			ResumeModelHelper.err(e, "Abort");
 			return;
 		}
-
-		String language = "en";
-		String country = "UK";
-		Locale currentLocale;
-		ResourceBundle messages;
-		currentLocale = new Locale(language, country);
-		messages = ResourceBundle.getBundle("messages.msg", currentLocale);
-
-		ResumeModelHelper.popup(messages.getString("greetings"), "greetings");
 
 		transformModel(builder);
 
@@ -106,15 +98,30 @@ public class ResumeInterpreter implements BONComponent {
 
 		// for each Root Model - a Resume - we will create a separate output
 		for (JBuilderModel model : roots) {
+
+			// choose language
+			try {
+				String lang = ResumeModelHelper.assignStringAttribute(model, "Language");
+
+				Messages.setResourceBundle(ResourceBundle.getBundle(Messages.BUNDLE_NAME, new Locale(lang)));
+			} catch (AttributeNotFoundException e) {
+				ResumeModelHelper.err(e, "Attribute mismatch");
+			}
+
+			// initialize interpreter
 			visitor.init();
 
+			// extract model information
 			fetchElements(model);
 
+			// perform transformation
 			visitor.perform(inputPath);
 		}
 	}
 
 	/**
+	 * This method scans the model and instantiates dynamically the corresponding {@link ResumeElement}s.
+	 * 
 	 * @param model
 	 */
 	@SuppressWarnings("unchecked")
@@ -126,17 +133,23 @@ public class ResumeInterpreter implements BONComponent {
 			ResumeElement element;
 
 			try {
+				// Dynamic object instantiation
 				element = (ResumeElement) Class.forName("model.elements." + className).newInstance();
+
+				// Build the object by models attributes
 				element.build(obj);
+
+				// Visitor dependent operation on each object, e.g. collecting
 				element.accept(visitor);
+
 			} catch (InstantiationException e) {
-				ResumeModelHelper.err(e.getStackTrace().toString(), "InstantiationException");
+				ResumeModelHelper.err(e, "InstantiationException");
 			} catch (AttributeNotFoundException e) {
-				ResumeModelHelper.err(e.getMessage(), "AttributeNotFoundException");
+				ResumeModelHelper.err(e, "Model mismatch - Attribute not found");
 			} catch (IllegalAccessException e) {
-				ResumeModelHelper.err(e.getStackTrace().toString(), "IllegalAccessException");
+				ResumeModelHelper.err(e, "IllegalAccessException");
 			} catch (ClassNotFoundException e) {
-				ResumeModelHelper.err(e.getStackTrace().toString(), "ClassNotFoundException");
+				ResumeModelHelper.err(e, "ClassNotFoundException");
 			}
 		}
 	}

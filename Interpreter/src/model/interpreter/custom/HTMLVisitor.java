@@ -1,4 +1,4 @@
-package model.interpreter;
+package model.interpreter.custom;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,8 +15,8 @@ import model.elements.Education;
 import model.elements.Employment;
 import model.elements.Institution;
 import model.elements.Project;
-import model.elements.ProjectHost;
 import model.help.ResumeModelHelper;
+import model.interpreter.core.FetchVisitor;
 
 import com.hp.gagawa.java.Document;
 import com.hp.gagawa.java.Node;
@@ -54,7 +54,7 @@ public class HTMLVisitor extends FetchVisitor {
 
 		// Content: Head
 		Title title = new Title();
-		title.appendText("Resume of " + person.getFullName());
+		title.appendText("Résumé of " + person.getFullName());
 		html.head.appendChild(title);
 
 		// Content: Body
@@ -82,8 +82,7 @@ public class HTMLVisitor extends FetchVisitor {
 		Div educationHead = new Div().setCSSClass("education_head");
 		educationHead.appendText("Education");
 		educationDiv.appendChild(educationHead);
-		
-		
+
 		for (Education edu : this.educationInstitutions) {
 			educationDiv.appendChild(education2HTML(edu));
 		}
@@ -120,7 +119,8 @@ public class HTMLVisitor extends FetchVisitor {
 
 		Div institutionText = new Div().setCSSClass("institution_text");
 
-		Div location = new Div().setCSSClass("institution_location").appendText("(" + inst.getLocation() + ")");
+		Div location = new Div().setCSSClass("institution_location").appendText(
+				"(" + inst.getAddress().toString() + ")");
 		Div titleDiv = new Div().setCSSClass("institution_title").appendText(title);
 		Div description = new Div().setCSSClass("institution_description").appendText(inst.getDescription());
 
@@ -128,27 +128,20 @@ public class HTMLVisitor extends FetchVisitor {
 		institutionText.appendChild(location);
 		institutionText.appendChild(description);
 
-		Div projectsDiv = new Div().setCSSClass("institution_project");
-		Div projectHead = new Div().setCSSClass("project_head");
-		projectHead.appendText("Projects");
-		projectsDiv.appendChild(projectHead);
-		
-		
-		// Projects ...
-//		for (ProjectHost connection : projectConnections) {
-//
-//			if (connection.getInstitution().compareTo(inst.getModelId()) == 0) {
-				projectsDiv.appendChild(project2HTML(inst.getModelId()));
-//			}
-//
-//		}
+		Node projects = project2HTML(inst.getModelId());
+		if (projects != null) {
+			Div projectsDiv = new Div().setCSSClass("institution_project");
+			Div projectHead = new Div().setCSSClass("project_head");
+			projectHead.appendText("Projects");
+			projectsDiv.appendChild(projectHead);
 
-		institutionText.appendChild(projectsDiv);
+			projectsDiv.appendChild(projects);
+			institutionText.appendChild(projectsDiv);
+		}
+
 		institutionDiv.appendChild(institutionText);
 		return institutionDiv;
 	}
-
-	
 
 	/**
 	 * @return DIV element containing person information
@@ -162,12 +155,13 @@ public class HTMLVisitor extends FetchVisitor {
 		Div name = new Div().appendText(person.getFullName()).setCSSClass("person_name");
 		text.appendChild(name);
 
-		Div birthday = getDurationDiv("Birthday: ", person.getBirthday(), null, "", "").setCSSClass("birthday");
+		Div birthday = getDurationDiv("Birth: ", person.getBirthday(), null, " in ", person.getBirthplace())
+				.setCSSClass("birthday");
 
 		text.appendChild(birthday);
 		personDiv.appendChild(text);
 
-		Div pictureDiv = new Div().appendChild(new Img("profile", person.getPicturePath())).setCSSClass(
+		Div pictureDiv = new Div().appendChild(new Img("Profile picture", person.getPicturePath())).setCSSClass(
 				"person_picture");
 		personDiv.appendChild(pictureDiv);
 
@@ -183,20 +177,19 @@ public class HTMLVisitor extends FetchVisitor {
 	private Node project2HTML(String institutelId) {
 
 		Div projectsDiv = new Div().setCSSClass("projects");
-				
+		int count = 0;
+
 		for (Project project : this.projects) {
-			
-			if(connections.containsKey(institutelId+"."+project.getModelId())){
-			
-			//if (project.getModelId().compareTo(projectModelId) == 0) {
+
+			if (connections.containsKey(institutelId + "." + project.getModelId())) {
 
 				Div projectDiv = new Div().setCSSClass("project");
-				
+
 				Div date = getDurationDiv(project.getStartDate(), project.getEndDate(), " now");
-				
+
 				Div type = new Div().setCSSClass("project_type").appendText(project.getType());
-				Div title = new Div().setCSSClass("project_title").appendText("\""+project.getName()+"\"");
-				
+				Div title = new Div().setCSSClass("project_title").appendText("\"" + project.getName() + "\"");
+
 				Div customer = new Div().setCSSClass("project_customer").appendText(
 						"Customer: " + project.getCustomer());
 
@@ -213,11 +206,17 @@ public class HTMLVisitor extends FetchVisitor {
 				projectDiv.appendChild(projectText);
 
 				projectsDiv.appendChild(projectDiv);
+
+				count++;
 			}
 		}
 
-		
-		return projectsDiv;
+		if (count > 0) {
+			return projectsDiv;
+		}
+
+		return null;
+
 	}
 
 	private void sortData() {
@@ -225,7 +224,7 @@ public class HTMLVisitor extends FetchVisitor {
 		Collections.sort(this.employmentInstitutions, Collections.reverseOrder());
 		Collections.sort(this.educationInstitutions, Collections.reverseOrder());
 		Collections.sort(this.projects, Collections.reverseOrder());
-		
+
 	}
 
 	private Div getDurationDiv(String title, Date start, Date end, String sep, String alt) {
@@ -239,11 +238,11 @@ public class HTMLVisitor extends FetchVisitor {
 
 		return new Div().setCSSClass("date").appendText(dateString);
 	}
-	
-	private Div getDurationDiv(Date start, Date end, String alt){		
-		return getDurationDiv("",  start,  end,  " - ",  alt);
+
+	private Div getDurationDiv(Date start, Date end, String alt) {
+		return getDurationDiv("", start, end, " - ", alt);
 	}
-	
+
 	/**
 	 * @param destination
 	 *            file path
@@ -261,7 +260,6 @@ public class HTMLVisitor extends FetchVisitor {
 
 			Files.copy(Paths.get(srcString), Paths.get(destCSS), StandardCopyOption.REPLACE_EXISTING);
 
-			
 			// Create result file
 			File file = new File(destination + File.separator + person.getName() + ".html");
 			file.createNewFile();

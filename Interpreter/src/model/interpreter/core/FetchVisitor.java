@@ -1,4 +1,5 @@
-package model.interpreter;
+package model.interpreter.core;
+
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -15,25 +16,26 @@ import model.elements.ResumeElement;
  */
 
 /**
- * TODO: description of SortVisitor
+ * This visitor reads a given model and stores all information in several members. To write an own interpreter this
+ * visitor can be overridden and therefore the functionality is to be implemented in the method {@link #perform(String)}
+ * .
  * 
  * @author Christoph Petzold
  * 
  */
 public abstract class FetchVisitor implements IResumeVisitor {
 
-	protected Person				person;
-	protected Vector<Education>		educationInstitutions;
-	protected Vector<Employment>	employmentInstitutions;
-	protected Vector<Project>		projects;
-	protected Vector<ProjectHost>	projectConnections;
+	protected Person						person;
+	protected Vector<Education>				educationInstitutions;
+	protected Vector<Employment>			employmentInstitutions;
+	protected Vector<Project>				projects;
+	protected Vector<ProjectHost>			projectConnections;
 
-	
 	/**
 	 * Map: "Institution.Project" -> ProjectHost
 	 */
-	protected HashMap<String, ProjectHost> connections;
-	
+	protected HashMap<String, ProjectHost>	connections;
+
 	public FetchVisitor() {
 		init();
 	}
@@ -55,7 +57,7 @@ public abstract class FetchVisitor implements IResumeVisitor {
 	}
 
 	public void visit(ProjectHost connection) {
-		connections.put(connection.getInstitution()+"."+connection.getProject(), connection);		
+		connections.put(connection.getInstitution() + "." + connection.getProject(), connection);
 	}
 
 	public void visit(ResumeElement element) {

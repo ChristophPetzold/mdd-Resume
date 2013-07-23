@@ -1,4 +1,5 @@
-package model.interpreter;
+package model.interpreter.core;
+
 import model.elements.Education;
 import model.elements.Employment;
 import model.elements.Person;

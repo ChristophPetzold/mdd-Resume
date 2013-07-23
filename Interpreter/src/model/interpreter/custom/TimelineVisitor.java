@@ -1,7 +1,7 @@
 /**
  * 
  */
-package model.interpreter;
+package model.interpreter.custom;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -12,6 +12,7 @@ import model.elements.Education;
 import model.elements.Employment;
 import model.elements.Project;
 import model.help.ResumeModelHelper;
+import model.interpreter.core.FetchVisitor;
 
 /**
  * This interpreter transforms the consumed model into a JSONP-Format. For each resume in the model one json file will
@@ -74,8 +75,9 @@ public class TimelineVisitor extends FetchVisitor {
 	protected String cleanUp(String jsonString) {
 
 		// ", , " -> ", "
-		while (jsonString.contains(JSON_SEP + JSON_SEP))
+		while (jsonString.contains(JSON_SEP + JSON_SEP)) {
 			jsonString = jsonString.replaceAll(JSON_SEP + JSON_SEP, JSON_SEP);
+		}
 
 		jsonString = jsonString.replaceAll(JSON_SEP + "}", "}");
 		jsonString = jsonString.replaceAll(JSON_SEP + "]", "]");
@@ -120,11 +122,11 @@ public class TimelineVisitor extends FetchVisitor {
 		for (Employment emp : employmentInstitutions) {
 			String text = "";
 
-			text += "Location: " + emp.getLocation() + "<br/>";
+			text += "Location: " + emp.getAddress().toString() + "<br/>";
 			text += "Position: " + emp.getPosition() + "<br/>";
 			text += emp.getDescription() + "<br/>";
 
-			String asset = addJsonAsset("", "", "", "");
+			String asset = addJsonAsset(emp.getMediaUrl(), "", "(" + emp.getMediaUrl() + ")", "");
 
 			institutionDates += addJSONDate(emp.getStartDate(), emp.getEndDate(), emp.getName(), text, TAG_EMPLOYMENT,
 					asset);
@@ -146,11 +148,11 @@ public class TimelineVisitor extends FetchVisitor {
 		for (Education edu : educationInstitutions) {
 			String text = "";
 
-			text += "Location: " + edu.getLocation() + "<br/>";
+			text += "Location: " + edu.getAddress().toString() + "<br/>";
 			text += "Type: " + edu.getType() + "<br/>";
 			text += edu.getDescription() + "<br/>";
 
-			String asset = addJsonAsset("", "", "", "");
+			String asset = addJsonAsset(edu.getMediaUrl(), "", "(" + edu.getMediaUrl() + ")", "");
 
 			educationDates += addJSONDate(edu.getStartDate(), edu.getEndDate(), edu.getName(), text, TAG_EDUCATION,
 					asset);
@@ -184,7 +186,7 @@ public class TimelineVisitor extends FetchVisitor {
 				text += "Customer: " + project.getCustomer() + "<br/>";
 				text += project.getDescription() + "<br/>";
 
-				String asset = addJsonAsset("", "", "", "");
+				String asset = addJsonAsset(project.getMediaUrl(), "", "(" + project.getMediaUrl() + ")", "");
 
 				projectJSON += addJSONDate(project.getStartDate(), project.getEndDate(), project.getType() + " at "
 						+ instituteName, text, tag, asset);
@@ -226,8 +228,9 @@ public class TimelineVisitor extends FetchVisitor {
 		date += addJsonElement(JSON_FIELD_TEXT, text);
 		date += addLastJsonElement(JSON_FIELD_TAG, tag);
 
-		if (!asset.isEmpty())
+		if (!asset.isEmpty()) {
 			date += JSON_SEP + asset;
+		}
 
 		return date + "}";
 	}

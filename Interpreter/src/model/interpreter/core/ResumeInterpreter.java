@@ -1,7 +1,9 @@
-package model.interpreter;
+package model.interpreter.core;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.JFileChooser;
@@ -9,7 +11,10 @@ import javax.swing.JOptionPane;
 
 import model.elements.ResumeElement;
 import model.help.AttributeNotFoundException;
+import model.help.NoChoiceException;
 import model.help.ResumeModelHelper;
+import model.interpreter.custom.HTMLVisitor;
+import model.interpreter.custom.TimelineVisitor;
 
 import org.isis.gme.bon.BONComponent;
 import org.isis.gme.bon.JBuilder;
@@ -30,25 +35,38 @@ public class ResumeInterpreter implements BONComponent {
 	 * BON-Methods
 	 ***************************************************************/
 
-	/**
-	 *
-	 */
 	@Override
 	public void invokeEx(JBuilder builder, JBuilderObject focus, @SuppressWarnings("rawtypes") Collection selected,
 			int param) {
 
-		setDestinationPath();
+		try {
+			interpeterChoice();
+			setDestinationPath();
+		} catch (NoChoiceException e) {
+			ResumeModelHelper.err(e.getMessage(), "Abort");
+			return;
+		}
 
-		// TODO choose interpretation
-		interpeterChoice();
+		String language = "en";
+		String country = "UK";
+		Locale currentLocale;
+		ResourceBundle messages;
+		currentLocale = new Locale(language, country);
+		messages = ResourceBundle.getBundle("messages.msg", currentLocale);
+
+		ResumeModelHelper.popup(messages.getString("greetings"), "greetings");
 
 		transformModel(builder);
+
 	}
 
 	/**
+	 * Open an input dialog where the interpreter can be chosen. <br>
+	 * TODO: messy - need some kind of registry
 	 * 
+	 * @throws NoChoiceException
 	 */
-	protected void interpeterChoice() {
+	protected void interpeterChoice() throws NoChoiceException {
 		String[] possibilities = { "HTML Résumé", "JSON for Timeline" };
 		String s = (String) JOptionPane.showInputDialog(null, "Choose Interpreter:\n", "Interpreter Choice",
 				JOptionPane.PLAIN_MESSAGE, null, possibilities, possibilities[0]);
@@ -67,8 +85,7 @@ public class ResumeInterpreter implements BONComponent {
 			return;
 		}
 
-		ResumeModelHelper.err("Could not choose interpreter", "Choice Failure");
-		System.exit(0);
+		throw new NoChoiceException();
 	}
 
 	@Override
@@ -80,18 +97,21 @@ public class ResumeInterpreter implements BONComponent {
 	 * Helper Methods
 	 ***************************************************************/
 
+	/**
+	 * For each individual Résumé contained in the given model the chosen interpreter will be called.
+	 * */
 	private void transformModel(JBuilder builder) {
 		@SuppressWarnings("unchecked")
 		Vector<JBuilderModel> roots = builder.getRootFolder().getRootModels();
 
 		// for each Root Model - a Resume - we will create a separate output
 		for (JBuilderModel model : roots) {
-
 			visitor.init();
+
 			fetchElements(model);
 
+			visitor.perform(inputPath);
 		}
-
 	}
 
 	/**
@@ -110,25 +130,23 @@ public class ResumeInterpreter implements BONComponent {
 				element.build(obj);
 				element.accept(visitor);
 			} catch (InstantiationException e) {
-				ResumeModelHelper.err(e.toString(), "InstantiationException");
+				ResumeModelHelper.err(e.getStackTrace().toString(), "InstantiationException");
 			} catch (AttributeNotFoundException e) {
 				ResumeModelHelper.err(e.getMessage(), "AttributeNotFoundException");
 			} catch (IllegalAccessException e) {
-				ResumeModelHelper.err(e.toString(), "IllegalAccessException");
+				ResumeModelHelper.err(e.getStackTrace().toString(), "IllegalAccessException");
 			} catch (ClassNotFoundException e) {
-				ResumeModelHelper.err(e.toString(), "ClassNotFoundException");
+				ResumeModelHelper.err(e.getStackTrace().toString(), "ClassNotFoundException");
 			}
-
 		}
-
-		visitor.perform(inputPath);
-
 	}
 
 	/**
 	 * Provide a dialog to choose the output folder.
+	 * 
+	 * @throws NoChoiceException
 	 * */
-	private void setDestinationPath() {
+	private void setDestinationPath() throws NoChoiceException {
 
 		JFileChooser fileDialog = new JFileChooser();
 
@@ -137,17 +155,14 @@ public class ResumeInterpreter implements BONComponent {
 
 		fileDialog.setDialogTitle("Interpreter Output");
 
-		fileDialog.setVisible(true);
 		final int result = fileDialog.showOpenDialog(null);
 
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File inputFile = fileDialog.getSelectedFile();
-			inputPath = inputFile.getPath();
-
+			this.inputPath = inputFile.getPath();
+		} else {
+			throw new NoChoiceException();
 		}
-
-		fileDialog.setVisible(false);
-
 	}
 
 }

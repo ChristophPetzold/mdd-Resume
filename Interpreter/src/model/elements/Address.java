@@ -26,6 +26,11 @@ public class Address extends ResumeElement {
 
 	@Override
 	public void build(JBuilderObject modelObject) throws AttributeNotFoundException {
+
+		if (modelObject == null) {
+			return;
+		}
+
 		super.build(modelObject);
 
 		// extract attributes

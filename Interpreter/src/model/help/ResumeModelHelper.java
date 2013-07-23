@@ -55,8 +55,8 @@ public class ResumeModelHelper {
 		JOptionPane.showMessageDialog(null, msg, title, JOptionPane.PLAIN_MESSAGE);
 	}
 
-	public static void err(String msg, String title) {
-		JOptionPane.showMessageDialog(null, msg, title, JOptionPane.ERROR_MESSAGE);
+	public static void err(Exception e, String title) {
+		JOptionPane.showMessageDialog(null, e.getMessage(), title, JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**

@@ -1,13 +1,17 @@
 <?xml version="1.0"?>
 <!DOCTYPE paradigm SYSTEM "edf.dtd">
 
-<paradigm name="Resume" guid="{D45CF03D-923B-4EF3-914C-3D9A2616B901}" cdate="Sat Jul 13 20:50:10 2013" mdate="Sat Jul 13 20:50:10 2013" >
+<paradigm name="Resume" guid="{7C01A4CF-BA48-49F6-A09B-0BF25C7B8744}" cdate="Sat Jul 13 20:50:10 2013" mdate="Sat Jul 13 20:50:10 2013" >
 
-	<comment>Build a persons Resmue</comment>
+	<comment>Model a persons Resmue</comment>
 
 	<author>Christoph Petzold</author>
 
 	<folder name = "RootFolder" metaref = "1000"  rootobjects = "ResumeContainer" >
+		<attrdef name="Birthplace" metaref = "1101" valuetype = "string" defvalue = "">
+		</attrdef>
+		<attrdef name="City" metaref = "1102" valuetype = "string" defvalue = "">
+		</attrdef>
 		<attrdef name="Customer" metaref = "1001" valuetype = "string" defvalue = "">
 		</attrdef>
 		<attrdef name="Day" metaref = "1002" valuetype = "enum" defvalue = "1">
@@ -46,11 +50,13 @@
 		<attrdef name="Description" metaref = "1003" valuetype = "string" defvalue = "">
 			<regnode name="multiLine" value = "3"></regnode>
 		</attrdef>
+		<attrdef name="EMail" metaref = "1103" valuetype = "string" defvalue = "">
+		</attrdef>
 		<attrdef name="FirstName" metaref = "1098" valuetype = "string" defvalue = "">
 		</attrdef>
-		<attrdef name="Location" metaref = "1005" valuetype = "string" defvalue = "">
-		</attrdef>
 		<attrdef name="MaidenName" metaref = "1006" valuetype = "string" defvalue = "">
+		</attrdef>
+		<attrdef name="Medialink" metaref = "1104" valuetype = "string" defvalue = "">
 		</attrdef>
 		<attrdef name="Month" metaref = "1007" valuetype = "enum" defvalue = "1">
 			<enumitem dispname = "1" value = "1"></enumitem>
@@ -69,6 +75,10 @@
 		<attrdef name="PicturePath" metaref = "1099" valuetype = "string" defvalue = "">
 		</attrdef>
 		<attrdef name="Position" metaref = "1008" valuetype = "string" defvalue = "">
+		</attrdef>
+		<attrdef name="PostalCode" metaref = "1106" valuetype = "string" defvalue = "">
+		</attrdef>
+		<attrdef name="Street" metaref = "1105" valuetype = "string" defvalue = "">
 		</attrdef>
 		<attrdef name="Type" metaref = "1010" valuetype = "enum" defvalue = "School">
 			<enumitem dispname = "School" value = "School"></enumitem>
@@ -103,7 +113,14 @@
 				</pointerspec>
 			</connjoint>
 		</connection>
-		<model name = "Education" metaref = "1014" attributes = "Description Location Type" >
+		<model name = "Address" metaref = "1107" attributes = "Street PostalCode City" >
+				<regnode name = "namePosition" value ="4"></regnode>
+				<regnode name = "icon" value ="address.png"></regnode>
+				<regnode name = "isTypeInfoShown" value ="true"></regnode>
+			<aspect name = "Aspect" metaref = "1150" attributes = "Street PostalCode City" >
+			</aspect>
+		</model>
+		<model name = "Education" metaref = "1014" attributes = "Description Medialink Type" >
 				<regnode name = "namePosition" value ="0"></regnode>
 				<regnode name = "icon" value ="education.png"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
@@ -119,15 +136,25 @@
                      (partCount <= 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Event, has to match 0..1.</dispname>
 			</constraint>
+			<constraint name="ValidInstitutionPartCardinality5" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Address" ) -> size in
+                     (partCount <= 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Institution, has to match 0..1.</dispname>
+			</constraint>
+			<role name = "Address" metaref = "1109" kind = "Address"></role>
 			<role name = "End" metaref = "1015" kind = "Date"></role>
 			<role name = "Start" metaref = "1016" kind = "Date"></role>
-			<aspect name = "Dated" metaref = "1082" attributes = "Description Location Type" >
-				<dispname>DatedAspect</dispname>
-				<part metaref = "1083" role = "End" primary = "yes" linked = "yes"></part>
-				<part metaref = "1084" role = "Start" primary = "yes" linked = "yes"></part>
+			<aspect name = "InstitutionAspect" metaref = "1133" attributes = "Description Medialink Type" >
+				<part metaref = "1134" role = "Address" primary = "yes" linked = "yes"></part>
+				<part metaref = "1135" role = "End" primary = "yes" linked = "yes"></part>
+				<part metaref = "1136" role = "Start" primary = "yes" linked = "yes"></part>
+			</aspect>
+			<aspect name = "EventAspect" metaref = "1130" attributes = "Description Medialink Type" >
+				<part metaref = "1131" role = "End" primary = "yes" linked = "yes"></part>
+				<part metaref = "1132" role = "Start" primary = "yes" linked = "yes"></part>
 			</aspect>
 		</model>
-		<model name = "Employment" metaref = "1020" attributes = "Description Location Position" >
+		<model name = "Employment" metaref = "1020" attributes = "Description Medialink Position" >
 				<regnode name = "namePosition" value ="0"></regnode>
 				<regnode name = "icon" value ="work.png"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
@@ -143,32 +170,48 @@
                      (partCount <= 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Event, has to match 0..1.</dispname>
 			</constraint>
+			<constraint name="ValidInstitutionPartCardinality5" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Address" ) -> size in
+                     (partCount <= 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Institution, has to match 0..1.</dispname>
+			</constraint>
+			<role name = "Address" metaref = "1110" kind = "Address"></role>
 			<role name = "End" metaref = "1021" kind = "Date"></role>
 			<role name = "Start" metaref = "1022" kind = "Date"></role>
-			<aspect name = "Dated" metaref = "1085" attributes = "Description Location Position" >
-				<dispname>DatedAspect</dispname>
-				<part metaref = "1086" role = "End" primary = "yes" linked = "yes"></part>
-				<part metaref = "1087" role = "Start" primary = "yes" linked = "yes"></part>
+			<aspect name = "InstitutionAspect" metaref = "1140" attributes = "Description Medialink Position" >
+				<part metaref = "1141" role = "Address" primary = "yes" linked = "yes"></part>
+				<part metaref = "1142" role = "End" primary = "yes" linked = "yes"></part>
+				<part metaref = "1143" role = "Start" primary = "yes" linked = "yes"></part>
+			</aspect>
+			<aspect name = "EventAspect" metaref = "1137" attributes = "Description Medialink Position" >
+				<part metaref = "1138" role = "End" primary = "yes" linked = "yes"></part>
+				<part metaref = "1139" role = "Start" primary = "yes" linked = "yes"></part>
 			</aspect>
 		</model>
-		<model name = "Person" metaref = "1026" attributes = "FirstName MaidenName PicturePath" >
+		<model name = "Person" metaref = "1026" attributes = "FirstName MaidenName PicturePath Birthplace EMail" >
 				<regnode name = "namePosition" value ="4"></regnode>
 				<regnode name = "icon" value ="person.png"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
 				<regnode name = "itemResizable" value ="true"></regnode>
 				<regnode name = "gradientFill" value ="true"></regnode>
-			<constraint name="ValidPersonPartCardinality5" eventmask = "0x0" depth = "1" priority = "1">
+			<constraint name="ValidPersonPartCardinality6" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "Birthday" ) -> size in
                      (partCount = 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Person, has to match 1.</dispname>
 			</constraint>
+			<constraint name="ValidPersonPartCardinality7" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Address" ) -> size in
+                     (partCount <= 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Person, has to match 0..1.</dispname>
+			</constraint>
+			<role name = "Address" metaref = "1111" kind = "Address"></role>
 			<role name = "Birthday" metaref = "1027" kind = "Date"></role>
-			<aspect name = "Dated" metaref = "1088" attributes = "FirstName MaidenName PicturePath" >
-				<dispname>DatedAspect</dispname>
-				<part metaref = "1089" role = "Birthday" primary = "yes" linked = "yes"></part>
+			<aspect name = "PersonAspect" metaref = "1123" attributes = "FirstName MaidenName PicturePath Birthplace EMail" >
+				<part metaref = "1124" role = "Address" primary = "yes" linked = "yes"></part>
+				<part metaref = "1125" role = "Birthday" primary = "yes" linked = "yes"></part>
 			</aspect>
 		</model>
-		<model name = "Project" metaref = "1030" attributes = "Description Customer TypeOfProject" >
+		<model name = "Project" metaref = "1030" attributes = "Description Medialink Customer TypeOfProject" >
 				<regnode name = "namePosition" value ="4"></regnode>
 				<regnode name = "icon" value ="project.png"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
@@ -186,21 +229,20 @@
 			</constraint>
 			<constraint name="ValidProjectHostdstCardinality2" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let dstCount = self.attachingConnections( "src", meta::ProjectHost ) -> size in
-                     (dstCount <= 1)]]>
-				<dispname>Multiplicity of objects, which are associated to Project as &quot;dst&quot; over ProjectHost, has to match 0..1.</dispname>
+                     (dstCount = 1)]]>
+				<dispname>Multiplicity of objects, which are associated to Project as &quot;dst&quot; over ProjectHost, has to match 1.</dispname>
 			</constraint>
 			<role name = "End" metaref = "1077" kind = "Date"></role>
 			<role name = "Start" metaref = "1078" kind = "Date"></role>
-			<aspect name = "Dated" metaref = "1090" attributes = "Description Customer TypeOfProject" >
-				<dispname>DatedAspect</dispname>
-				<part metaref = "1091" role = "End" primary = "yes" linked = "yes"></part>
-				<part metaref = "1092" role = "Start" primary = "yes" linked = "yes"></part>
+			<aspect name = "EventAspect" metaref = "1144" attributes = "Description Medialink Customer TypeOfProject" >
+				<part metaref = "1145" role = "End" primary = "yes" linked = "yes"></part>
+				<part metaref = "1146" role = "Start" primary = "yes" linked = "yes"></part>
 			</aspect>
 		</model>
 		<model name = "ResumeContainer" metaref = "1032" >
 				<regnode name = "namePosition" value ="4"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
-			<constraint name="ValidResumeContainerPartCardinality6" eventmask = "0x0" depth = "1" priority = "1">
+			<constraint name="ValidResumeContainerPartCardinality8" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "Person" ) -> size in
                      (partCount = 1)]]>
 				<dispname>Multiplicity of parts, which are contained by ResumeContainer, has to match 1.</dispname>

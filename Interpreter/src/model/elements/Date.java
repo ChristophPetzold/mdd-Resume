@@ -1,11 +1,12 @@
 package model.elements;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
 import model.help.AttributeNotFoundException;
 import model.help.ResumeModelHelper;
-import model.interpreter.IResumeVisitor;
+import model.interpreter.core.IResumeVisitor;
 
 import org.isis.gme.bon.JBuilderObject;
 
@@ -15,7 +16,7 @@ import org.isis.gme.bon.JBuilderObject;
  */
 
 /**
- * TODO: description of Date
+ * Model Data Object representing a date.
  * 
  * @author Christoph Petzold
  * 
@@ -46,7 +47,7 @@ public class Date extends ResumeElement {
 		cal.set(Calendar.MONTH, ResumeModelHelper.assignIntAttribute(modelObject, ATTRIBUTE_MONTH));
 
 		/**
-		 * Getting wrong day values from the model (day-1), so have to add 1 
+		 * Getting 'wrong' day values from the model (day-1), so have to add 1
 		 * */
 		int day = ResumeModelHelper.assignIntAttribute(modelObject, ATTRIBUTE_DAY) + 1;
 		cal.set(Calendar.DAY_OF_MONTH, day);
@@ -64,6 +65,10 @@ public class Date extends ResumeElement {
 	}
 
 	public String getDateString(String pattern) {
+
+		if (date == null) {
+			return "";
+		}
 		SimpleDateFormat format = new SimpleDateFormat(pattern);
 		return format.format(date);
 	}

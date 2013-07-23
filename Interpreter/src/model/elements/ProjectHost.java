@@ -1,7 +1,7 @@
 package model.elements;
 
 import model.help.AttributeNotFoundException;
-import model.interpreter.IResumeVisitor;
+import model.interpreter.core.IResumeVisitor;
 
 import org.isis.gme.bon.JBuilderConnection;
 import org.isis.gme.bon.JBuilderObject;
@@ -12,7 +12,7 @@ import org.isis.gme.bon.JBuilderObject;
  */
 
 /**
- * TODO: description of ProjectHost
+ * Model Data Object representing a institution-to-project connection.
  * 
  * @author Christoph Petzold
  * 

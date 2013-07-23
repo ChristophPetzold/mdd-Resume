@@ -2,7 +2,7 @@ package model.elements;
 
 import model.help.AttributeNotFoundException;
 import model.help.ResumeModelHelper;
-import model.interpreter.IResumeVisitor;
+import model.interpreter.core.IResumeVisitor;
 
 import org.isis.gme.bon.JBuilderModel;
 import org.isis.gme.bon.JBuilderObject;
@@ -13,7 +13,7 @@ import org.isis.gme.bon.JBuilderObject;
  */
 
 /**
- * TODO: description of Project
+ * Model Data Object representing a project.
  * 
  * @author Christoph Petzold
  * 
@@ -23,6 +23,8 @@ public class Project extends ResumeElement implements Comparable<Project> {
 	private final String	ATTRIBUTE_DESCRIPTION	= "Description";
 	private final String	ATTRIBUTE_CUSTOMER		= "Customer";
 	private final String	ATTRIBUTE_TYPE			= "TypeOfProject";
+	private final String	ATTRIBUTE_MEDIA_URL		= "Medialink";
+
 	private final String	ATOM_START_DATE			= "Start";
 	private final String	ATOM_END_DATE			= "End";
 
@@ -31,15 +33,19 @@ public class Project extends ResumeElement implements Comparable<Project> {
 	protected String		type					= "";
 	protected Date			startDate				= new Date();
 	protected Date			endDate					= new Date();
+	protected String		mediaUrl				= "";
 
 	@Override
 	public void build(JBuilderObject modelObject) throws AttributeNotFoundException {
 		super.build(modelObject);
 
+		// extract attributes
 		description = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_DESCRIPTION);
 		customer = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_CUSTOMER);
 		type = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_TYPE);
+		mediaUrl = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_MEDIA_URL);
 
+		// extract atoms
 		startDate.build(ResumeModelHelper.getSingleAtom((JBuilderModel) modelObject, ATOM_START_DATE));
 		endDate.build(ResumeModelHelper.getSingleAtom((JBuilderModel) modelObject, ATOM_END_DATE));
 
@@ -78,6 +84,13 @@ public class Project extends ResumeElement implements Comparable<Project> {
 	 */
 	public Date getEndDate() {
 		return endDate;
+	}
+
+	/**
+	 * @return the mediaUrl
+	 */
+	public String getMediaUrl() {
+		return mediaUrl;
 	}
 
 	@Override

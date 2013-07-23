@@ -2,7 +2,7 @@ package model.elements;
 
 import model.help.AttributeNotFoundException;
 import model.help.ResumeModelHelper;
-import model.interpreter.IResumeVisitor;
+import model.interpreter.core.IResumeVisitor;
 
 import org.isis.gme.bon.JBuilderObject;
 
@@ -12,7 +12,7 @@ import org.isis.gme.bon.JBuilderObject;
  */
 
 /**
- * TODO: description of Education
+ * Model Data Object representing an education.
  * 
  * @author Christoph Petzold
  * 

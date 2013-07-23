@@ -1,13 +1,14 @@
 package model.elements;
 
 import model.help.AttributeNotFoundException;
-import model.interpreter.IResumeVisitor;
+import model.interpreter.core.IResumeVisitor;
 
 import org.isis.gme.bon.JBuilderObject;
 
 /**
- * @author Christoph Petzold
+ * Abstract Model Data Object representing any Model Object.
  * 
+ * @author Christoph Petzold
  */
 public abstract class ResumeElement {
 
@@ -32,7 +33,9 @@ public abstract class ResumeElement {
 	 * 
 	 * @param visitor
 	 */
-	public abstract void accept(IResumeVisitor visitor);
+	public void accept(IResumeVisitor visitor) {
+		visitor.visit(this);
+	}
 
 	/**
 	 * @return Elements name attribute

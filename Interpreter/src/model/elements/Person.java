@@ -2,7 +2,7 @@ package model.elements;
 
 import model.help.AttributeNotFoundException;
 import model.help.ResumeModelHelper;
-import model.interpreter.IResumeVisitor;
+import model.interpreter.core.IResumeVisitor;
 
 import org.isis.gme.bon.JBuilderModel;
 import org.isis.gme.bon.JBuilderObject;
@@ -12,6 +12,8 @@ import org.isis.gme.bon.JBuilderObject;
  */
 
 /**
+ * Model Data Object representing a person.
+ * 
  * @author Christoph Petzold
  */
 public class Person extends ResumeElement {
@@ -20,11 +22,17 @@ public class Person extends ResumeElement {
 	private final String	ATTRIBUTE_MAIDEN_NAME	= "MaidenName";
 	private final String	ATTRIBUTE_PICTURE_PATH	= "PicturePath";
 	private final String	ATOM_BIRTHDAY			= "Birthday";
+	private final String	ATTRIBUTE_BIRTHPLACE	= "Birthplace";
+	private final String	ATTRIBUTE_EMAIL			= "EMail";
+	private final String	MODEL_ADDRESS			= "Address";
 
 	protected String		firstName				= "";
 	protected String		maidenName				= "";
 	protected String		picturePath				= "";
 	protected Date			birthday				= new Date();
+	protected String		birthplace				= "";
+	protected String		eMail					= "";
+	protected Address		address					= new Address();
 
 	/**
 	 * Following the "Visitor Pattern" elements of the Resumé-Domain provide the must-have "Accept Method"
@@ -39,10 +47,18 @@ public class Person extends ResumeElement {
 	public void build(JBuilderObject modelObject) throws AttributeNotFoundException {
 		super.build(modelObject);
 
+		// extract attributes
 		firstName = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_FIRST_NAME);
 		maidenName = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_MAIDEN_NAME);
 		picturePath = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_PICTURE_PATH);
-		birthday.build((JBuilderObject) ((JBuilderModel) modelObject).getAtoms(ATOM_BIRTHDAY).get(0));
+		birthplace = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_BIRTHPLACE);
+		eMail = ResumeModelHelper.assignStringAttribute(modelObject, ATTRIBUTE_EMAIL);
+
+		// extract atoms
+		birthday.build(ResumeModelHelper.getSingleAtom((JBuilderModel) modelObject, ATOM_BIRTHDAY));
+
+		// extract sub models
+		address.build(ResumeModelHelper.getSingleModel((JBuilderModel) modelObject, MODEL_ADDRESS));
 	}
 
 	/**
@@ -73,7 +89,14 @@ public class Person extends ResumeElement {
 		return birthday;
 	}
 
-	public String getFullName(){
+	/**
+	 * @return the birthplace
+	 */
+	public String getBirthplace() {
+		return birthplace;
+	}
+
+	public String getFullName() {
 		String txt = "";
 
 		if (!firstName.isEmpty()) {
@@ -88,7 +111,21 @@ public class Person extends ResumeElement {
 
 		return txt;
 	}
-	
+
+	/**
+	 * @return the eMail
+	 */
+	public String geteMail() {
+		return eMail;
+	}
+
+	/**
+	 * @return the address
+	 */
+	public Address getAddress() {
+		return address;
+	}
+
 	@Override
 	public String toString() {
 		return "Person: " + getFullName();

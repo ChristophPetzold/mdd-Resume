@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE paradigm SYSTEM "edf.dtd">
 
-<paradigm name="Resume" guid="{7C01A4CF-BA48-49F6-A09B-0BF25C7B8744}" cdate="Sat Jul 13 20:50:10 2013" mdate="Sat Jul 13 20:50:10 2013" >
+<paradigm name="Resume" guid="{0EDEFF34-EDC0-4A37-9B66-4ACF483F2E29}" cdate="Sat Jul 13 20:50:10 2013" mdate="Sat Jul 13 20:50:10 2013" >
 
 	<comment>Model a persons Resmue</comment>
 
@@ -53,6 +53,10 @@
 		<attrdef name="EMail" metaref = "1103" valuetype = "string" defvalue = "">
 		</attrdef>
 		<attrdef name="FirstName" metaref = "1098" valuetype = "string" defvalue = "">
+		</attrdef>
+		<attrdef name="Language" metaref = "1150" valuetype = "enum" defvalue = "en">
+			<enumitem dispname = "en" value = "en"></enumitem>
+			<enumitem dispname = "de" value = "de"></enumitem>
 		</attrdef>
 		<attrdef name="MaidenName" metaref = "1006" valuetype = "string" defvalue = "">
 		</attrdef>
@@ -117,7 +121,7 @@
 				<regnode name = "namePosition" value ="4"></regnode>
 				<regnode name = "icon" value ="address.png"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
-			<aspect name = "Aspect" metaref = "1150" attributes = "Street PostalCode City" >
+			<aspect name = "Aspect" metaref = "1151" attributes = "Street PostalCode City" >
 			</aspect>
 		</model>
 		<model name = "Education" metaref = "1014" attributes = "Description Medialink Type" >
@@ -127,14 +131,14 @@
 				<regnode name = "itemResizable" value ="true"></regnode>
 				<regnode name = "gradientFill" value ="true"></regnode>
 			<constraint name="ValidEventPartCardinality3" eventmask = "0x0" depth = "1" priority = "1">
-				<![CDATA[let partCount = self.parts( "Start" ) -> size in
-                     (partCount = 1)]]>
-				<dispname>Multiplicity of parts, which are contained by Event, has to match 1.</dispname>
-			</constraint>
-			<constraint name="ValidEventPartCardinality4" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "End" ) -> size in
                      (partCount <= 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Event, has to match 0..1.</dispname>
+			</constraint>
+			<constraint name="ValidEventPartCardinality4" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Start" ) -> size in
+                     (partCount = 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Event, has to match 1.</dispname>
 			</constraint>
 			<constraint name="ValidInstitutionPartCardinality5" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "Address" ) -> size in
@@ -161,14 +165,14 @@
 				<regnode name = "itemResizable" value ="true"></regnode>
 				<regnode name = "gradientFill" value ="true"></regnode>
 			<constraint name="ValidEventPartCardinality3" eventmask = "0x0" depth = "1" priority = "1">
-				<![CDATA[let partCount = self.parts( "Start" ) -> size in
-                     (partCount = 1)]]>
-				<dispname>Multiplicity of parts, which are contained by Event, has to match 1.</dispname>
-			</constraint>
-			<constraint name="ValidEventPartCardinality4" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "End" ) -> size in
                      (partCount <= 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Event, has to match 0..1.</dispname>
+			</constraint>
+			<constraint name="ValidEventPartCardinality4" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Start" ) -> size in
+                     (partCount = 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Event, has to match 1.</dispname>
 			</constraint>
 			<constraint name="ValidInstitutionPartCardinality5" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "Address" ) -> size in
@@ -195,14 +199,14 @@
 				<regnode name = "itemResizable" value ="true"></regnode>
 				<regnode name = "gradientFill" value ="true"></regnode>
 			<constraint name="ValidPersonPartCardinality6" eventmask = "0x0" depth = "1" priority = "1">
-				<![CDATA[let partCount = self.parts( "Birthday" ) -> size in
-                     (partCount = 1)]]>
-				<dispname>Multiplicity of parts, which are contained by Person, has to match 1.</dispname>
-			</constraint>
-			<constraint name="ValidPersonPartCardinality7" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "Address" ) -> size in
                      (partCount <= 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Person, has to match 0..1.</dispname>
+			</constraint>
+			<constraint name="ValidPersonPartCardinality7" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Birthday" ) -> size in
+                     (partCount = 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Person, has to match 1.</dispname>
 			</constraint>
 			<role name = "Address" metaref = "1111" kind = "Address"></role>
 			<role name = "Birthday" metaref = "1027" kind = "Date"></role>
@@ -218,14 +222,14 @@
 				<regnode name = "itemResizable" value ="true"></regnode>
 				<regnode name = "gradientFill" value ="true"></regnode>
 			<constraint name="ValidEventPartCardinality3" eventmask = "0x0" depth = "1" priority = "1">
-				<![CDATA[let partCount = self.parts( "Start" ) -> size in
-                     (partCount = 1)]]>
-				<dispname>Multiplicity of parts, which are contained by Event, has to match 1.</dispname>
-			</constraint>
-			<constraint name="ValidEventPartCardinality4" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let partCount = self.parts( "End" ) -> size in
                      (partCount <= 1)]]>
 				<dispname>Multiplicity of parts, which are contained by Event, has to match 0..1.</dispname>
+			</constraint>
+			<constraint name="ValidEventPartCardinality4" eventmask = "0x0" depth = "1" priority = "1">
+				<![CDATA[let partCount = self.parts( "Start" ) -> size in
+                     (partCount = 1)]]>
+				<dispname>Multiplicity of parts, which are contained by Event, has to match 1.</dispname>
 			</constraint>
 			<constraint name="ValidProjectHostdstCardinality2" eventmask = "0x0" depth = "1" priority = "1">
 				<![CDATA[let dstCount = self.attachingConnections( "src", meta::ProjectHost ) -> size in
@@ -239,7 +243,7 @@
 				<part metaref = "1146" role = "Start" primary = "yes" linked = "yes"></part>
 			</aspect>
 		</model>
-		<model name = "ResumeContainer" metaref = "1032" >
+		<model name = "ResumeContainer" metaref = "1032" attributes = "Language" >
 				<regnode name = "namePosition" value ="4"></regnode>
 				<regnode name = "isTypeInfoShown" value ="true"></regnode>
 			<constraint name="ValidResumeContainerPartCardinality8" eventmask = "0x0" depth = "1" priority = "1">
@@ -252,7 +256,7 @@
 			<role name = "Person" metaref = "1095" kind = "Person"></role>
 			<role name = "Project" metaref = "1036" kind = "Project"></role>
 			<role name = "ProjectHost" metaref = "1037" kind = "ProjectHost"></role>
-			<aspect name = "main" metaref = "1061" >
+			<aspect name = "main" metaref = "1061" attributes = "Language" >
 				<dispname>mainAspect</dispname>
 				<part metaref = "1062" role = "Education" primary = "yes" linked = "no"></part>
 				<part metaref = "1063" role = "Employment" primary = "yes" linked = "no"></part>
